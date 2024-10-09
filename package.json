@@ -1,4 +1,6 @@
 {
+    "name": "@adyen/adyen-web-mocked",
+    "version": "1.0",
     "private": false,
     "keywords": [
         "adyen",
@@ -6,7 +8,8 @@
         "checkout",
         "payment",
         "payments",
-        "components"
+        "components",
+        "mocks"
     ],
     "workspaces": [
         "packages/*"
