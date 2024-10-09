@@ -1,7 +1,5 @@
 {
-    "name": "@adyen/adyen-web-mocked",
-    "version": "1.0",
-    "private": true,
+    "private": false,
     "keywords": [
         "adyen",
         "adyen-web",
