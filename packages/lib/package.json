@@ -76,7 +76,9 @@
     "prettier:fix": "prettier \"src/**/*.{js,ts,tsx}\" \"package.json\" --write --loglevel silent",
     "prepublishOnly": "npm run build && rm -rf ./styles && mkdir ./styles && cp ./dist/es/adyen.css ./styles/adyen.css",
     "prepare": "cd ../.. && husky packages/lib/.husky",
-    "size": "npm run build && size-limit"
+    "size": "npm run build && size-limit",
+    "deploy": "rm -r ../../../texasholdem/node_modules/@adyen/adyen-web/dist && cp -r dist ../../../texasholdem/node_modules/@adyen/adyen-web && rm -r ../../../texasholdem/apps/gw_app/node_modules/.vite",
+    "gto": "npm run build && npm run deploy"
   },
   "devDependencies": {
     "@eslint/compat": "1.1.1",
@@ -143,7 +145,8 @@
     "@types/applepayjs": "14.0.8",
     "@types/googlepay": "0.7.6",
     "classnames": "2.5.1",
-    "preact": "10.22.1"
+    "preact": "10.22.1",
+    "spark-md5": "^3.0.2"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint",

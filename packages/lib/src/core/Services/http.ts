@@ -1,5 +1,6 @@
 import { DEFAULT_HTTP_TIMEOUT, FALLBACK_CONTEXT } from '../config';
 import AdyenCheckoutError from '../Errors/AdyenCheckoutError';
+import { mockResponse } from './mockResponse';
 
 export interface HttpOptions {
     accept?: string;
@@ -26,7 +27,7 @@ function isAdyenApiErrorResponse(data: any): data is AdyenApiErrorResponse {
     return data && data.errorCode && data.errorType && data.message && data.status;
 }
 
-export function http<T>(options: HttpOptions, data?: any): Promise<T> {
+export function http<T>(options: HttpOptions, data?: any, mocks = true): Promise<T> {
     const { headers = [], errorLevel = 'warn', loadingContext = FALLBACK_CONTEXT, method = 'GET', path, timeout = DEFAULT_HTTP_TIMEOUT } = options;
 
     const request: RequestInit = {
@@ -46,6 +47,23 @@ export function http<T>(options: HttpOptions, data?: any): Promise<T> {
     };
 
     const url = `${loadingContext}${path}`;
+    // console.debug('URL loading context', loadingContext)
+    // console.debug('URL path', path)
+
+    const mockConfig = JSON.parse(localStorage.getItem('mockResponse')) || false
+    console.debug('Mock config:', mockConfig)
+
+    if (mocks && mockConfig && mockConfig?.client)
+        return (
+            mockResponse({
+                endpoint: path.includes('sessions') ? `session_${path.split('?')[1]}_setup` : path,
+                method,
+                params: {},
+                data: {},
+                httpClient: () => http(options, data, false),
+                mockConfig,
+            })
+        )
 
     return (
         fetch(url, request)
@@ -102,10 +120,10 @@ function handleFetchError(message: string, level: ErrorLevel, error: unknown): v
     }
 }
 
-export function httpGet<T = any>(options: HttpOptions, data?: any): Promise<T> {
-    return http<T>({ ...options, method: 'GET' }, data);
+export function httpGet<T = any>(options: HttpOptions, data?: any, mocks = true): Promise<T> {
+    return http<T>({ ...options, method: 'GET' }, data, mocks);
 }
 
-export function httpPost<T = any>(options: HttpOptions, data?: any): Promise<T> {
-    return http<T>({ ...options, method: 'POST' }, data);
+export function httpPost<T = any>(options: HttpOptions, data?: any, mocks = true): Promise<T> {
+    return http<T>({ ...options, method: 'POST' }, data, mocks);
 }

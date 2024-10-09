@@ -4,6 +4,7 @@ import type { CoreConfiguration, ICore } from './types';
 
 async function AdyenCheckout(props: CoreConfiguration): Promise<Core> {
     const checkout = new Core(props);
+    console.debug('Loading checkout')
     return await checkout.initialize();
 }
 

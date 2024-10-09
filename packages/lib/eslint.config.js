@@ -1,4 +1,3 @@
-// @ts-check
 import eslint from '@eslint/js';
 import { fixupPluginRules } from '@eslint/compat';
 import tseslint from 'typescript-eslint';
@@ -88,7 +87,9 @@ const config = tseslint.config(
                 }
             ],
             'react/react-in-jsx-scope': 'off',
-            'react/prop-types': 'off'
+            'react/prop-types': 'off',
+            // Add or modify the no-console rule
+            'no-console': 'off',
         }
     },
     {
