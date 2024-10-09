@@ -89,7 +89,7 @@ const config = tseslint.config(
             'react/react-in-jsx-scope': 'off',
             'react/prop-types': 'off',
             // Add or modify the no-console rule
-            'no-console': 'off',
+            'no-console': 'off'
         }
     },
     {

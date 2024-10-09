@@ -1,5 +1,6 @@
 {
-    "name": "@adyen/adyen-web-main",
+    "name": "@adyen/adyen-web-mocked",
+    "version": "1.0",
     "private": true,
     "keywords": [
         "adyen",
@@ -27,7 +28,8 @@
         "type-check": "yarn workspace @adyen/adyen-web type-check",
         "prepare": "yarn workspace @adyen/adyen-web prepare",
         "changeset": "changeset",
-        "version": "changeset version"
+        "version": "changeset version",
+        "postinstall": "npm run build"
     },
     "devDependencies": {
         "@adyen/adyen-web-server": "1.0.0",

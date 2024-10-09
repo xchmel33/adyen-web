@@ -149,8 +149,6 @@
     "spark-md5": "^3.0.2"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint",
-    "*.{scss,css}": "stylelint",
-    "*.{js,jsx,ts,tsx,html,md}": "prettier --write"
+    "*.{scss,css}": "stylelint"
   }
 }

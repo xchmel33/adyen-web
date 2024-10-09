@@ -23,7 +23,9 @@ const CoreProvider = ({ i18n, loadingContext, resources, children }: CoreProvide
     useEffect(() => {
         if (!i18n || !loadingContext || !resources) {
             console.warn(
-                `CoreProvider - WARNING core provider is missing:${i18n ? '' : 'i18n'} ${loadingContext ? '' : 'loadingContext'} ${resources ? '' : 'resources'}`
+                `CoreProvider - WARNING core provider is missing:${i18n ? '' : 'i18n'} ${loadingContext ? '' : 'loadingContext'} ${
+                    resources ? '' : 'resources'
+                }`
             );
         }
     }, [i18n, loadingContext, resources]);

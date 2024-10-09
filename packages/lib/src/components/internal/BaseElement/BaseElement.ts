@@ -155,7 +155,7 @@ abstract class BaseElement<P extends BaseElementProps> implements IBaseElement {
             if (this.props.modules && this.props.modules.analytics) {
                 this.setUpAnalytics({
                     containerWidth: node && node.offsetWidth,
-                    component: !this.props.isDropin ? (this.constructor['analyticsType'] ?? this.constructor['type']) : 'dropin',
+                    component: !this.props.isDropin ? this.constructor['analyticsType'] ?? this.constructor['type'] : 'dropin',
                     flavor: !this.props.isDropin ? 'components' : 'dropin'
                 }).then(() => {
                     // Once the initial analytics set up call has been made...
