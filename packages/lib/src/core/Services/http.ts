@@ -47,12 +47,8 @@ export function http<T>(options: HttpOptions, data?: any, mocks = true): Promise
     };
 
     const url = `${loadingContext}${path}`;
-    // console.debug('URL loading context', loadingContext)
-    // console.debug('URL path', path)
 
     const mockConfig = JSON.parse(localStorage.getItem('mockResponse')) || false;
-    console.debug('Mock config:', mockConfig);
-
     if (mocks && mockConfig && mockConfig?.client)
         return mockResponse({
             endpoint: path.includes('sessions') ? `session_${path.split('?')[1]}_setup` : path,

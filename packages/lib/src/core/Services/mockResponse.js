@@ -321,7 +321,7 @@ export async function mockResponse({ endpoint, method, params, data, httpClient,
             }
         })
     ) {
-        console.debug(`Saved mock response ${cacheId}`);
+        // console.debug(`Saved mock response ${cacheId}`);
     } else {
         console.error(`Error saving mock response ${cacheId}`);
     }
