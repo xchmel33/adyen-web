@@ -84,7 +84,7 @@ const sortParams = params =>
         .reduce((result, key) => ({ ...result, [key]: params[key] }), {})
         .value();
 
-const generateCacheId = ({ endpoint, method, params, data, publicId, mockPrefixKey }) => {
+const generateCacheId = ({ endpoint, method, params, data, publicId, mockPrefixKey }, indexing = true) => {
     const cleanParams = params && sortParams(params);
     const cleanData = data && sortParams(data);
 
@@ -92,7 +92,7 @@ const generateCacheId = ({ endpoint, method, params, data, publicId, mockPrefixK
         publicId = '';
     }
 
-    return [
+    const res = [
         mockPrefixKey,
         publicId,
         localStorage.getItem('loginPreset'),
@@ -103,6 +103,8 @@ const generateCacheId = ({ endpoint, method, params, data, publicId, mockPrefixK
     ]
         .filter(x => x)
         .join('_');
+
+    return indexing ? getRequestIndex(res) : res;
 };
 
 async function automockApp({ method = 'POST', url, data }) {
@@ -186,12 +188,15 @@ const getMockPrefixKey = testName => {
 };
 
 export async function mockResponse({ endpoint, method, params, data, httpClient, mockConfig }) {
-    let cacheId = generateCacheId({
-        endpoint,
-        method,
-        params,
-        data
-    });
+    let cacheId = generateCacheId(
+        {
+            endpoint,
+            method,
+            params,
+            data
+        },
+        mockConfig.indexing
+    );
     const mocks = await automockApp({
         method: 'GET',
         url: `getResponseIndex`
@@ -199,9 +204,6 @@ export async function mockResponse({ endpoint, method, params, data, httpClient,
     if (!mockConfig || !mockConfig.client) {
         console.warn('Mock config missing in localstorage, mocks are disabled');
         return httpClient();
-    }
-    if (mockConfig.indexing) {
-        cacheId = getRequestIndex(cacheId);
     }
     const testName = localStorage.getItem('testName') || '';
     let filename = sanitizeFileName(cacheId);
@@ -219,7 +221,7 @@ export async function mockResponse({ endpoint, method, params, data, httpClient,
         data,
         mockPrefixKey
     };
-    const uniqueCacheId = generateCacheId(cacheParams);
+    const uniqueCacheId = generateCacheId(cacheParams, mockConfig.indexing);
     const uniqueFilename = sanitizeFileName(uniqueCacheId);
     // check if unique response exists
     if (mocks && uniqueFilename in mocks) {
@@ -234,12 +236,7 @@ export async function mockResponse({ endpoint, method, params, data, httpClient,
             cacheId = uniqueCacheId;
             isUnique = true;
         } else {
-            return result.isError
-                ? { error: result, response: null }
-                : {
-                      error: null,
-                      response: result
-                  };
+            return result.isError ? { error: result } : result;
         }
     }
 
@@ -253,16 +250,18 @@ export async function mockResponse({ endpoint, method, params, data, httpClient,
 
         // compare the result with backend server in recording mode
         if (mockConfig.recording && !mocks[filename].tests.includes(testName)) {
-            let { response, error } = await httpClient();
-            if (error) {
-                delete error.toJSON;
-                console.warn('Error in apiCallRes:', error);
+            let response, error;
+            try {
+                response = await httpClient();
+            } catch (e) {
+                error = e;
             }
+            console.debug('re-fetched response:', response);
             response = {
-                isError: !!error,
+                isError: !!error && !!response.error,
                 ...(response || error)
             };
-            if (!uniqueResponseBlacklist.includes(endpoint) && !deepEqual(result, JSON.parse(JSON.stringify(response)))) {
+            if (mockConfig.all_unique || (!uniqueResponseBlacklist.includes(endpoint) && !deepEqual(result, JSON.parse(JSON.stringify(response))))) {
                 await automockApp({
                     url: `saveResponse?id=${requestId}`,
                     data: {
@@ -275,19 +274,14 @@ export async function mockResponse({ endpoint, method, params, data, httpClient,
                         isUnique: true
                     }
                 });
-                return { response, error };
+                return response;
             }
         }
 
         if (!result || result.status === 404) {
             console.error(`Error getting mock response ${cacheId}. Will call backend server & save new.`);
         } else {
-            return result.isError
-                ? { error: result, response: null }
-                : {
-                      error: null,
-                      response: result
-                  };
+            return result.isError ? { error: result } : result;
         }
     }
 
@@ -299,12 +293,12 @@ export async function mockResponse({ endpoint, method, params, data, httpClient,
                 type: 'cancelled request'
             }
         });
-        return { response: null, error: { canceled: true } };
+        return { error: { canceled: true } };
     }
 
     // call backend server
     const response = await httpClient();
-    // console.debug('response from http:', response)
+    console.debug('response from http:', response);
 
     // save response
     if (

@@ -3,6 +3,7 @@ import { UIElement } from '../types';
 import type { CoreConfiguration, ICore } from './types';
 
 async function AdyenCheckout(props: CoreConfiguration): Promise<Core> {
+    console.debug('Adyen Checkout SDK initialized with configuration v1:', props);
     const checkout = new Core(props);
     return await checkout.initialize();
 }

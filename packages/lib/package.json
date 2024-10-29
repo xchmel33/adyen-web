@@ -1,7 +1,7 @@
 {
   "name": "@gtolukas/adyen-web-mocks",
   "private": false,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "homepage": "https://docs.adyen.com/checkout",
   "type": "module",
@@ -78,7 +78,7 @@
     "prepublishOnly": "npm run build && rm -rf ./styles && mkdir ./styles && cp ./dist/es/adyen.css ./styles/adyen.css",
     "prepare": "cd ../.. && husky packages/lib/.husky",
     "size": "npm run build && size-limit",
-    "deploy": "rm -r ../../../texasholdem/node_modules/@adyen/adyen-web/dist && cp -r dist ../../../texasholdem/node_modules/@adyen/adyen-web && rm -r ../../../texasholdem/apps/gw_app/node_modules/.vite",
+    "deploy": "rm -r ../../../texasholdem/node_modules/@gtolukas/adyen-web-mocks/dist && cp -r dist ../../../texasholdem/node_modules/@gtolukas/adyen-web-mocks && rm -r ../../../texasholdem/apps/gw_app/node_modules/.vite",
     "gto": "npm run build && npm run deploy"
   },
   "devDependencies": {

@@ -7,6 +7,7 @@ const ALLOWED_PROPERTIES = ['action', 'resultCode', 'sessionData', 'order', 'ses
 export function sanitizeResponse(response: RawPaymentResponse): PaymentResponseData {
     const removedProperties = [];
 
+    console.debug('Sanitizing response object', JSON.stringify(response, null, 2));
     const sanitizedObject = Object.keys(response).reduce((acc, cur) => {
         if (!ALLOWED_PROPERTIES.includes(cur)) {
             removedProperties.push(cur);
@@ -18,6 +19,7 @@ export function sanitizeResponse(response: RawPaymentResponse): PaymentResponseD
 
     if (removedProperties.length) console.warn(`The following properties should not be passed to the client: ${removedProperties.join(', ')}`);
 
+    console.debug('Sanitized response object', JSON.stringify(sanitizedObject, null, 2));
     return sanitizedObject as PaymentResponseData;
 }
 
